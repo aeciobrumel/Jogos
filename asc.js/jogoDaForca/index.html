@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jogo da Forca</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Forca</h1>
+    <div id="word-container">
+        <p id="word-display"></p>
+    </div>
+    <div id="guess-container">
+        <label for="guess-input">Digite uma letra:</label>
+        <input type="text" id="guess-input" maxlength="1">
+        <button id="guess-button">Enviar</button>
+    </div>
+    <div id="result-container" class="hidden">
+        <p id="result-message"></p>
+        <button id="restart-button">Jogar Novamente</button>
+    </div>
+
+    <script>
+        // Palavras disponíveis para o jogo
+        var words = ["gato", "cachorro", "elefante", "leao", "tigre", "girafa", "rinoceronte"];
+
+        var selectedWord = "";
+        var guessedLetters = [];
+        var remainingGuesses = 6;
+        var wordDisplay = document.getElementById("word-display");
+        var guessInput = document.getElementById("guess-input");
+        var guessButton = document.getElementById("guess-button");
+        var resultContainer = document.getElementById("result-container");
+        var resultMessage = document.getElementById("result-message");
+        var restartButton = document.getElementById("restart-button");
+
+        // Escolhe uma palavra aleatória para o jogo
+        function selectWord() {
+            var randomIndex = Math.floor(Math.random() * words.length);
+            selectedWord = words[randomIndex];
+        }
+
+        // Inicializa o jogo
+        function initializeGame() {
+            selectWord();
+            guessedLetters = [];
+            remainingGuesses = 6;
+            wordDisplay.textContent = generateHiddenWord();
+            guessInput.value = "";
+            resultContainer.classList.add("hidden");
+        }
+
+        // Gera a palavra oculta com '_' para as letras não adivinhadas
+        function generateHiddenWord() {
+            var hiddenWord = "";
+            for (var i = 0; i < selectedWord.length; i++) {
+                var letter = selectedWord[i];
+                if (guessedLetters.includes(letter)) {
+                    hiddenWord += letter;
+                } else {
+                    hiddenWord += "_";
+                }
+                hiddenWord += " ";
+            }
+            return hiddenWord;
+        }
+
+        // Atualiza o display da palavra
+        function updateWordDisplay() {
+            wordDisplay.textContent = generateHiddenWord();
+        }
+
+        // Verifica se a letra digitada faz parte da palavra
+        function checkGuess() {
+            var guess = guessInput.value.toLowerCase();
+            if (guessedLetters.includes(guess)) {
+                alert("Você já tentou essa letra antes!");
+            } else {
+                guessedLetters.push(guess);
+                if (selectedWord.includes(guess)) {
+                    updateWordDisplay();
+                    if (!wordDisplay.textContent.includes("_")) {
+                        endGame("Você ganhou! Parabéns!");
+                    }
+                } else {
+                    remainingGuesses--;
+                    if (remainingGuesses === 0) {
+                        endGame("Você perdeu! Tente novamente.");
+                    }
+                }
+            }
+            guessInput.value = "";
+        }
+
+        // Encerra o jogo
+        function endGame(message) {
+            resultMessage.textContent = message;
+            resultContainer.classList.remove("hidden");
+        }
+
+        // Reinicia o jogo ao clicar no botão "Jogar Novamente"
+        restartButton.addEventListener("click", function() {
+            initializeGame();
+        });
+
+        // Inicializa o jogo ao carregar a página
+        window.addEventListener("load", function() {
+            initializeGame();
+        });
+
+        // Verifica a letra digitada ao clicar no botão "Enviar"
+        guessButton.addEventListener("click", function() {
+            checkGuess();
+        });
+
+        // Verifica a letra digitada ao pressionar Enter no campo de input
+        guessInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                checkGuess();
+            }
+        });
+    </script>
+</body>
+</html>
